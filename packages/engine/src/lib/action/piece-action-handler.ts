@@ -143,13 +143,13 @@ export class PieceActionHandler extends BaseActionHandler<PieceAction> {
 
       const context: ActionContext = {
         executionType: this.executionType,
-        store: createContextStore('', globals.flowId),
+        store: createContextStore('', globals.flowVersionId),
         auth: resolvedProps[AUTHENTICATION_PROPERTY_NAME],
         propsValue: resolvedProps,
         connections: connectionManager,
+        serverUrl: globals.serverUrl!,
         run: {
           id: globals.flowRunId,
-          webhookBaseUrl: globals.apiUrl,
           stop: this.generateStopHook({ stepOutput }),
           pause: this.generatePauseHook({ stepOutput }),
         },
