@@ -1,15 +1,17 @@
 import crypto from 'node:crypto'
 import { PieceAuth, createPiece } from '@activepieces/pieces-framework'
 import { slackSendDirectMessageAction } from './lib/actions/send-direct-message-action'
+import { requestApprovalDirectMessageAction } from './lib/actions/request-approval-direct-message'
 import { slackSendMessageAction } from './lib/actions/send-message-action';
 import { newMessage } from './lib/triggers/new-message';
 import { newReactionAdded } from './lib/triggers/new-reaction-added';
+import { requestSendApprovalMessageAction } from './lib/actions/request-approval-message';
 
 export const slackAuth = PieceAuth.OAuth2({
   displayName: 'Authentication',
   description: '',
   authUrl: 'https://slack.com/oauth/authorize',
-  tokenUrl: 'https://slack.com/api/oauth.access',
+  tokenUrl: 'https://slack.com/api/oauth.v2.access',
   required: true,
   scope: [
     'channels:read',
@@ -25,8 +27,8 @@ export const slackAuth = PieceAuth.OAuth2({
 
 export const slack = createPiece({
   displayName: 'Slack',
-      minimumSupportedRelease: '0.5.0',
-    logoUrl: 'https://cdn.activepieces.com/pieces/slack.png',
+  minimumSupportedRelease: '0.5.0',
+  logoUrl: 'https://cdn.activepieces.com/pieces/slack.png',
   auth: slackAuth,
   events: {
     parseAndReply: ({ payload }) => {
@@ -54,6 +56,8 @@ export const slack = createPiece({
   actions: [
     slackSendDirectMessageAction,
     slackSendMessageAction,
+    requestApprovalDirectMessageAction,
+    requestSendApprovalMessageAction,
   ],
   triggers: [
     newMessage,

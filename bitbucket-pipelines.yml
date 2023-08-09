@@ -1,14 +1,5 @@
 ## Put content to S3 after each commit
 pipelines:
-  default:
-    - step:
-        name: Deploy to S3 and Publish to Test Environment
-        deployment: test
-        image: atlassian/pipelines-awscli
-        script:
-          # - aws s3 sync --delete . s3://repo.uzeli.com/staging/accounttest/
-          - echo "Publish to Test Environment"
-          # - curl -sS -H "Content-Type:application/json" -X POST -d "{\"secret\":\"${DEPLOYMENT_APIKEY}\"}" ${DEPLOYMENT_ENDPOINT}/accounttest/deploy
   branches:
     main:
       - step:
