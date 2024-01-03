@@ -8,6 +8,11 @@ pipelines:
           image: atlassian/pipelines-awscli
           script:
             - aws s3 sync --delete . s3://repo.uzeli.com/staging/activepieces/ --exclude ".git/*"
+            - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 401309747089.dkr.ecr.us-east-1.amazonaws.com
+            - docker build -t activepieces .
+            - docker tag activepieces:latest 401309747089.dkr.ecr.us-east-1.amazonaws.com/activepieces:latest
+            - docker push 401309747089.dkr.ecr.us-east-1.amazonaws.com/activepieces:latest
+
       - step:
           name: Deploy to Staging
           deployment: staging
