@@ -4,7 +4,7 @@ pipelines:
     main:
       - step:
           name: Deploy to ECR
-          deployment: ecr-test
+          deployment: test
           image: atlassian/pipelines-awscli
           services:
             - docker
