@@ -1,4 +1,10 @@
 ## Put content to S3 after each commit
+
+definitions:
+  services:
+    docker:
+      memory: 3072
+
 pipelines:
   branches:
     main:
@@ -12,7 +18,7 @@ pipelines:
             - eval $(aws ecr get-login --no-include-email)
             - docker build -t activepieces .
             - docker tag activepieces:latest 401309747089.dkr.ecr.us-east-1.amazonaws.com/activepieces:latest
-            - docker push 401309747089.dkr.ecr.us-east-1.amazonaws.com/activepieces:latest 
+            - docker push 401309747089.dkr.ecr.us-east-1.amazonaws.com/activepieces:latest
             - aws s3 sync --delete . s3://repo.uzeli.com/staging/activepieces/ --exclude ".git/*"
 
       - step:
