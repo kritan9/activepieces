@@ -8,17 +8,24 @@ definitions:
 pipelines:
   branches:
     main:
+        - step:
+            name: Deploy to ECR
+            deployment: test
+            image: atlassian/pipelines-awscli
+            services:
+              - docker
+            script:
+              - eval $(aws ecr get-login --region us-east-1 --no-include-email)
+              - docker build -t activepieces .
+              - docker tag activepieces:latest 401309747089.dkr.ecr.us-east-1.amazonaws.com/activepieces:latest
+              - docker push 401309747089.dkr.ecr.us-east-1.amazonaws.com/activepieces:latest
+
+    develop:
       - step:
           name: Deploy to S3
           deployment: test
           image: atlassian/pipelines-awscli
-          services:
-            - docker
           script:
-            - eval $(aws ecr get-login --region us-east-1 --no-include-email)
-            - docker build -t activepieces .
-            - docker tag activepieces:latest 401309747089.dkr.ecr.us-east-1.amazonaws.com/activepieces:latest
-            - docker push 401309747089.dkr.ecr.us-east-1.amazonaws.com/activepieces:latest
             - aws s3 sync --delete . s3://repo.uzeli.com/staging/activepieces/ --exclude ".git/*"
 
       - step:
