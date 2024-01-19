@@ -26,6 +26,8 @@ import { UserLoggedIn } from './guards/user-logged-in.guard';
 import { ImportFlowComponent } from './modules/import-flow/import-flow.component';
 import { LottieCacheModule, LottieModule } from 'ngx-lottie';
 import player from 'lottie-web';
+import { ImportFlowUriEncodedComponent } from './modules/import-flow-uri-encoded/import-flow-uri-encoded.component';
+import { ImportFlowUriEncodedResolver } from './modules/import-flow-uri-encoded/import-flow-uri-encoded.resolver';
 import {
   MonacoEditorModule,
   NgxMonacoEditorConfig,
@@ -58,6 +60,7 @@ export function playerFactory() {
     NotFoundComponent,
     RedirectUrlComponent,
     ImportFlowComponent,
+    ImportFlowUriEncodedComponent,
   ],
   imports: [
     CommonModule,
@@ -142,6 +145,14 @@ function dynamicRoutes(edition: string) {
     },
   ];
   const suffixRoutes: Route[] = [
+    {
+      path: 'import-flow-uri-encoded',
+      canActivate: [UserLoggedIn],
+      resolve: {
+        combination: ImportFlowUriEncodedResolver,
+      },
+      component: ImportFlowUriEncodedComponent,
+    },
     {
       path: 'templates/:templateId',
       component: ImportFlowComponent,

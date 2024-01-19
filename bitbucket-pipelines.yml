@@ -1,0 +1,36 @@
+## Put content to S3 after each commit
+
+definitions:
+  services:
+    docker:
+      memory: 3072
+
+pipelines:
+  branches:
+    main:
+        - step:
+            name: Deploy to ECR
+            deployment: test
+            image: atlassian/pipelines-awscli
+            services:
+              - docker
+            script:
+              - eval $(aws ecr get-login --region us-east-1 --no-include-email)
+              - docker build -t activepieces .
+              - docker tag activepieces:latest 401309747089.dkr.ecr.us-east-1.amazonaws.com/activepieces:latest
+              - docker push 401309747089.dkr.ecr.us-east-1.amazonaws.com/activepieces:latest
+
+    develop:
+      - step:
+          name: Deploy to S3
+          deployment: test
+          image: atlassian/pipelines-awscli
+          script:
+            - aws s3 sync --delete . s3://repo.uzeli.com/staging/activepieces/ --exclude ".git/*"
+
+      - step:
+          name: Deploy to Staging
+          deployment: staging
+          script:
+            - echo "Deploying to Staging environment"
+            - curl -sS -H "Content-Type:application/json" -X POST -d "{\"secret\":\"${DEPLOYMENT_APIKEY}\"}" ${DEPLOYMENT_ENDPOINT}/activepieces/deploy

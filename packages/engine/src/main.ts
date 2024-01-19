@@ -14,7 +14,6 @@ import {
   TriggerHookType,
   ExecutionType,
   StepOutput,
-  FlowVersion,
   ExecuteCodeOperation,
   ExecuteExtractPieceMetadata,
   ExecuteValidateAuthOperation,
@@ -24,17 +23,8 @@ import { pieceHelper } from './lib/helper/action-helper';
 import { triggerHelper } from './lib/helper/trigger-helper';
 import { Piece } from '@activepieces/pieces-framework';
 
-const loadFlowVersion = (flowVersionId: string) => {
-  const flowVersionJsonFile = `${globals.flowDirectory}/${flowVersionId}.json`
-  const flowVersion: FlowVersion = Utils.parseJsonFile(flowVersionJsonFile)
-
-  globals.flowId = flowVersion.id;
-
-  return flowVersion
-}
-
 const initFlowExecutor = (input: ExecuteFlowOperation): FlowExecutor => {
-  const flowVersion = loadFlowVersion(input.flowVersionId)
+  const { flowVersion } = input
   const firstStep = flowVersion.trigger.nextAction
 
   if (input.executionType === ExecutionType.RESUME) {
@@ -89,7 +79,9 @@ const executeFlow = async (): Promise<void> => {
     globals.workerToken = input.workerToken!;
     globals.projectId = input.projectId;
     globals.apiUrl = input.apiUrl!;
+    globals.serverUrl = input.serverUrl!;
     globals.flowRunId = input.flowRunId;
+    globals.flowVersionId = input.flowVersion.id;
 
     if (input.executionType === ExecutionType.RESUME) {
       globals.resumePayload = input.resumePayload;
@@ -185,6 +177,7 @@ const executeAction = async (): Promise<void> => {
     globals.workerToken = input.workerToken!;
     globals.projectId = input.projectId;
     globals.apiUrl = input.apiUrl!;
+    globals.serverUrl = input.serverUrl;
 
     const output = await pieceHelper.executeAction(input);
     writeOutput({
