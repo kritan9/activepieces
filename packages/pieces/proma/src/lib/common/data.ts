@@ -12,6 +12,8 @@ import {
   WorkspaceResponse,
   Webhook,
   WebhookResponse,
+  TableRowProp,
+  TableRowPropsResponse,
 } from './types';
 import _ from 'lodash';
 
@@ -25,8 +27,8 @@ export const parseJSON = (x: string, returnNull = false) => {
   }
 };
 
-export const PROMA_SERVER_URL =
-  'https://pipeline-759987269.catalystserverless.com/api/oauth';
+export const PROMA_SERVER_URL = 'https://proma.ai/api/oauth';
+// 'https://pipeline-759987269.development.catalystserverless.com/api/oauth';
 
 export async function getOrganizations(
   api_key: string
@@ -94,6 +96,19 @@ export async function getTableColumns(
   return response.body.data;
 }
 
+export async function getTableRowProps(
+  api_key: string,
+  table_id: string
+): Promise<TableRowProp[]> {
+  if (!table_id) return [];
+  const response = await httpClient.sendRequest<TableRowPropsResponse>({
+    url: `${PROMA_SERVER_URL}/tablerow/props/get`,
+    method: HttpMethod.GET,
+    queryParams: { table_id, api_key },
+  });
+  return response.body.data;
+}
+
 export async function storeWebhookUrl({
   api_key,
   table_id,
@@ -146,11 +161,13 @@ export async function insertTableRow({
   table_id,
   data,
   api_key,
+  matchById = true,
 }: {
   api_key: string;
   table_id: string;
   workspace_id: string;
   data: unknown;
+  matchById: boolean;
 }): Promise<TableRow> {
   const response = await httpClient.sendRequest<{ data: TableRow }>({
     url: `${PROMA_SERVER_URL}/tablerow/add`,
@@ -160,6 +177,7 @@ export async function insertTableRow({
       table_id,
       data,
       api_key,
+      matchById,
     },
     queryParams: { api_key },
   });
@@ -171,11 +189,13 @@ export async function updateTableRow({
   table_id,
   data,
   api_key,
+  matchById = true,
 }: {
   api_key: string;
   table_id: string;
   workspace_id: string;
   data: any;
+  matchById: boolean;
 }): Promise<TableRow | null> {
   if (!data?.ROWID) return null;
   const response = await httpClient.sendRequest<{ data: TableRow }>({
@@ -186,6 +206,7 @@ export async function updateTableRow({
       table_id,
       data,
       api_key,
+      matchById,
     },
     queryParams: { api_key },
   });

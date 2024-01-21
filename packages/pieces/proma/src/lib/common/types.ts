@@ -2,6 +2,7 @@ export type WorkspaceResponse = { data: Workspace[] };
 export type OrganizationResponse = { data: Organization[] };
 export type TableResponse = { data: Table[] };
 export type TableColumnResponse = { data: TableColumn[] };
+export type TableRowPropsResponse = { data: TableRowProp[] };
 export type TableRowResponse = { data: TableRow[] };
 
 export interface Workspace {
@@ -30,6 +31,22 @@ export interface TableColumn {
   tableID: string;
   spaceID: string;
   dataType: string;
+}
+
+export interface TableRowProp {
+  id: string;
+  type:
+    | 'Number'
+    | 'ShortText'
+    | 'LongText'
+    | 'StaticDropdown'
+    | 'StaticMultiSelectDropdown';
+  properties: {
+    displayName: string;
+    description: string | undefined;
+    required: boolean | undefined;
+    options: { label: string; value: string }[] | undefined;
+  };
 }
 
 export interface User {

@@ -12,7 +12,7 @@ export const updatePromaRow = createAction({
     workspace_id: promaProps.workspace_id(true),
     table_id: promaProps.table_id(true, "write"),
     row_id: promaProps.row_id(true),
-    dataRow: promaProps.data_row(true)
+    dataRow: promaProps.data_row_dynamic(true)
   },
   async run(context) {
     const api_key = context.auth;
@@ -21,7 +21,7 @@ export const updatePromaRow = createAction({
     const dataRow = context.propsValue.dataRow;
     const ROWID = context.propsValue.row_id;
     if (api_key && workspace_id && table_id) {
-      const temp = await updateTableRow({ api_key, workspace_id, table_id, data: { ROWID, ...dataRow } }).catch(
+      const temp = await updateTableRow({ api_key, workspace_id, table_id, data: { ROWID, ...dataRow } , matchById:true}).catch(
         () => null
       );
       return { data: temp };

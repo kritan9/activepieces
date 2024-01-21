@@ -1,6 +1,20 @@
-import { Property } from '@activepieces/pieces-framework';
+import { DynamicPropsValue, Property } from '@activepieces/pieces-framework';
 import { Table, TableColumn, Workspace } from './types';
-import { getTableColumns, getTables, getWorkSpaces } from './data';
+import {
+  getTableColumns,
+  getTableRowProps,
+  getTables,
+  getWorkSpaces,
+} from './data';
+
+const FieldMapping = {
+  ShortText: Property.ShortText,
+  LongText: Property.LongText,
+  Number: Property.Number,
+  StaticDropdown: Property.StaticDropdown,
+  StaticMultiSelectDropdown: Property.StaticMultiSelectDropdown,
+  Checkbox: Property.Checkbox,
+};
 
 export const promaProps = {
   table_name: (required = false) =>
@@ -37,7 +51,7 @@ export const promaProps = {
           { label: 'time', value: 'time' },
           { label: 'date', value: 'date' },
           { label: 'image', value: 'image' },
-          { label: 'select', value: 'select' },
+          { label: 'markdown', value: 'markdown' },
           { label: 'multiSelect', value: 'multiSelect' },
           { label: 'file', value: 'file' },
           { label: 'tel', value: 'tel' },
@@ -131,8 +145,9 @@ export const promaProps = {
       displayName: label || 'Column Name',
       description: '',
       required: required,
-      refreshers: ['api_key', 'table_id'],
-      options: async ({ api_key, table_id }) => {
+      refreshers: ['auth', 'table_id'],
+      options: async ({ auth, table_id }) => {
+        const api_key = auth;
         if (!api_key)
           return {
             disabled: true,
@@ -171,13 +186,53 @@ export const promaProps = {
         };
       },
     }),
-  data_row: (required = false) =>
-    Property.Object({
-      displayName: 'Enter data',
+  // data_row: (required = false) =>
+  //   Property.Object({
+  //     displayName: 'Enter data',
+  //     required,
+  //     defaultValue: {},
+  //     description: 'Enter column name on left and its value on right',
+  //   }),
+  data_row_dynamic: (required = false) => {
+    return Property.DynamicProperties({
+      displayName: 'Form',
+      description: 'Enter value for columns',
       required,
       defaultValue: {},
-      description: 'Enter column name on left and its value on right',
-    }),
+      refreshers: ['auth', 'table_id'],
+      props: async (propsValue) => {
+        const auth = propsValue.auth as unknown as string;
+        const table_id = propsValue.table_id as unknown as string;
+        const tableRowProps = await getTableRowProps(auth, table_id);
+
+        const fields: DynamicPropsValue = {};
+
+        tableRowProps?.forEach?.((trp) => {
+          if (
+            trp.type === 'StaticDropdown' ||
+            trp.type === 'StaticMultiSelectDropdown'
+          ) {
+            const properties = {
+              ...trp.properties,
+              required: !!trp.properties?.required,
+              options: trp.properties?.options
+                ? { options: trp.properties.options }
+                : { options: [] },
+            };
+            fields[trp.id] = FieldMapping[trp.type](properties);
+          } else {
+            const properties = {
+              ...trp.properties,
+              required: !!trp.properties?.required,
+            };
+            fields[trp.id] = FieldMapping[trp.type](properties);
+          }
+        });
+
+        return fields;
+      },
+    });
+  },
   row_id: (required = false) =>
     Property.ShortText({ displayName: 'Row ID', required, description: '' }),
 };
