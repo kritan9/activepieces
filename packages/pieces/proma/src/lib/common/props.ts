@@ -186,24 +186,19 @@ export const promaProps = {
         };
       },
     }),
-  // data_row: (required = false) =>
-  //   Property.Object({
-  //     displayName: 'Enter data',
-  //     required,
-  //     defaultValue: {},
-  //     description: 'Enter column name on left and its value on right',
-  //   }),
-  data_row_dynamic: (required = false) => {
+  data_row_dynamic: (required = false, search = false) => {
     return Property.DynamicProperties({
-      displayName: 'Form',
-      description: 'Enter value for columns',
+      displayName: search ? 'Search Condition' : 'Form',
+      description: search
+        ? 'Enter conditions to match when searching rows'
+        : 'Enter value for columns',
       required,
       defaultValue: {},
       refreshers: ['auth', 'table_id'],
       props: async (propsValue) => {
         const auth = propsValue.auth as unknown as string;
         const table_id = propsValue.table_id as unknown as string;
-        const tableRowProps = await getTableRowProps(auth, table_id);
+        const tableRowProps = await getTableRowProps(auth, table_id, search);
 
         const fields: DynamicPropsValue = {};
 

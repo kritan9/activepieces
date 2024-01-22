@@ -12,7 +12,7 @@ export const updatePromaRow = createAction({
     workspace_id: promaProps.workspace_id(true),
     table_id: promaProps.table_id(true, "write"),
     row_id: promaProps.row_id(true),
-    dataRow: promaProps.data_row_dynamic(true)
+    dataRow: promaProps.data_row_dynamic(true, false)
   },
   async run(context) {
     const api_key = context.auth;

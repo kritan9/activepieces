@@ -27,7 +27,8 @@ export const parseJSON = (x: string, returnNull = false) => {
   }
 };
 
-export const PROMA_SERVER_URL = 'https://proma.ai/api/oauth';
+export const PROMA_SERVER_URL =
+  'https://pipeline-759987269.catalystserverless.com/api/oauth';
 // 'https://pipeline-759987269.development.catalystserverless.com/api/oauth';
 
 export async function getOrganizations(
@@ -71,13 +72,15 @@ export async function getTables(
 export async function getTableRows(
   api_key: string,
   table_id: string,
+  data: any,
   mode = 'read'
 ): Promise<TableRow[]> {
   if (!table_id) return [];
   const response = await httpClient.sendRequest<TableRowResponse>({
-    url: `${PROMA_SERVER_URL}/gettablerows`,
-    method: HttpMethod.GET,
-    queryParams: { table_id, api_key, mode },
+    url: `${PROMA_SERVER_URL}/tablerows/search`,
+    method: HttpMethod.POST,
+    body: { table_id, api_key, mode, data },
+    queryParams: { api_key },
   });
   return response.body.data;
 }
@@ -98,13 +101,14 @@ export async function getTableColumns(
 
 export async function getTableRowProps(
   api_key: string,
-  table_id: string
+  table_id: string,
+  search = false
 ): Promise<TableRowProp[]> {
   if (!table_id) return [];
   const response = await httpClient.sendRequest<TableRowPropsResponse>({
     url: `${PROMA_SERVER_URL}/tablerow/props/get`,
     method: HttpMethod.GET,
-    queryParams: { table_id, api_key },
+    queryParams: { table_id, api_key, search: search ? '1' : '' },
   });
   return response.body.data;
 }

@@ -11,7 +11,7 @@ export const addPromaRow = createAction({
   props: {
     workspace_id: promaProps.workspace_id(true),
     table_id: promaProps.table_id(true,"write"),
-    dataRow: promaProps.data_row_dynamic(true)
+    dataRow: promaProps.data_row_dynamic(true, false)
   },
   async run(context) {
     const api_key = context.auth;
