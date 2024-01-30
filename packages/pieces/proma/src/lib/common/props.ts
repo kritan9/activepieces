@@ -5,6 +5,10 @@ import {
   getTableRowProps,
   getTables,
   getWorkSpaces,
+  optionalTimeFormats,
+  timeFormat,
+  timeFormatDescription,
+  timeZoneOptions,
 } from './data';
 
 const FieldMapping = {
@@ -230,4 +234,24 @@ export const promaProps = {
   },
   row_id: (required = false) =>
     Property.ShortText({ displayName: 'Row ID', required, description: '' }),
+  time_format: () =>
+    Property.StaticDropdown({
+      displayName: 'To Time Format',
+      description: timeFormatDescription,
+      options: {
+        options: optionalTimeFormats,
+      },
+      required: true,
+      defaultValue: timeFormat.format00,
+    }),
+
+  time_zone: () =>
+    Property.StaticDropdown<string>({
+      displayName: 'Time Zone',
+      options: {
+        options: timeZoneOptions,
+      },
+      required: true,
+      defaultValue: 'UTC',
+    }),
 };
