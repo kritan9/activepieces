@@ -13,6 +13,7 @@ import { updatePromaRow } from './lib/actions/update-item';
 import { teamMemberAddedWorkspace } from './lib/triggers/team-member-added-ws';
 import { buttonTrigger } from './lib/triggers/button-trigger';
 import { getTime } from './lib/actions/get-time';
+import { sendEmail } from './lib/actions/send-email';
 
 export const promaAuth = PieceAuth.SecretText({
   displayName: 'API Key',
@@ -34,7 +35,8 @@ export const proma = createPiece({
     getPromaProjects,
     getPromaTableColumns,
     getPromaTableRows,
-    getTime
+    getTime,
+    sendEmail
   ],
   auth: promaAuth,
   triggers: [
