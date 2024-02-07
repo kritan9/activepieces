@@ -43,17 +43,14 @@ export async function getOrganizations(
   return response.body.data;
 }
 
-export async function sendMail(
-  api_key: string,
-  mail_data: any
-): Promise<Organization[]> {
-  const response = await httpClient.sendRequest<OrganizationResponse>({
+export async function sendMail(api_key: string, mail_data: any): Promise<any> {
+  const response = await httpClient.sendRequest<any>({
     url: `${PROMA_SERVER_URL}/sendemail`,
     method: HttpMethod.POST,
     body: { api_key, mail_data },
     queryParams: { api_key },
   });
-  return response.body.data;
+  return response.body;
 }
 
 export async function getWorkSpaces(
