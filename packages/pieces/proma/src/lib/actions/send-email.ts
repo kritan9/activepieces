@@ -47,7 +47,7 @@ export const sendEmail = createAction({
     const { auth } = context;
     const { to, reply_to, subject, content_type, content } = context.propsValue;
     const info = await sendMail(auth, {
-      personalizations: to.map((x) => {
+      personalizations: (typeof to === 'string' ? [to] : to).map((x) => {
         return {
           to: [
             {
